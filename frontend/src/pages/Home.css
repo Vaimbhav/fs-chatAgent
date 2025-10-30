@@ -1,0 +1,318 @@
+/* Animation delays for loading dots */
+.animation-delay-100 {
+	animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+	animation-delay: 0.2s;
+}
+
+/* Animated gradient background */
+@keyframes gradient-shift {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.gradient-bg {
+	background: linear-gradient(
+		-45deg,
+		#4c6ef5 0%,
+		#7950f2 25%,
+		#d946ef 50%,
+		#06b6d4 75%,
+		#4c6ef5 100%
+	);
+	background-size: 400% 400%;
+	animation: gradient-shift 15s ease infinite;
+}
+
+/* Glass morphism effect */
+.glass-effect {
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Message animations */
+@keyframes slideInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+.message-enter-left {
+	animation: slideInLeft 0.3s ease-out;
+}
+
+.message-enter-right {
+	animation: slideInRight 0.3s ease-out;
+}
+
+/* Floating animation for icons */
+@keyframes float {
+	0%,
+	100% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+.float-animation {
+	animation: float 3s ease-in-out infinite;
+}
+
+/* Shimmer effect for buttons */
+@keyframes shimmer {
+	0% {
+		background-position: -200% center;
+	}
+	100% {
+		background-position: 200% center;
+	}
+}
+
+.shimmer-button {
+	background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+	background-size: 200% auto;
+	transition: all 0.3s ease;
+}
+
+.shimmer-button:hover {
+	animation: shimmer 2s linear infinite;
+	box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Pulse animation for active states */
+@keyframes pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+	}
+	50% {
+		box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+	}
+}
+
+.pulse-effect {
+	animation: pulse 2s infinite;
+}
+
+/* Glow effect for AI messages */
+.ai-message-glow {
+	box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+	transition: all 0.3s ease;
+}
+
+.ai-message-glow:hover {
+	box-shadow: 0 8px 30px rgba(102, 126, 234, 0.25);
+	transform: translateY(-2px);
+}
+
+/* User message gradient */
+.user-message-gradient {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+	transition: all 0.3s ease;
+}
+
+.user-message-gradient:hover {
+	box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+	transform: translateY(-1px);
+}
+
+/* Smooth fade in for results */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.fade-in {
+	animation: fadeIn 0.4s ease-out;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+	width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+	border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Loading dots enhanced */
+.loading-dot {
+	background: linear-gradient(135deg, #667eea, #764ba2);
+	box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+/* File attachment card */
+.file-card {
+	background: linear-gradient(
+		135deg,
+		rgba(102, 126, 234, 0.1) 0%,
+		rgba(118, 75, 162, 0.1) 100%
+	);
+	border: 1px solid rgba(102, 126, 234, 0.2);
+	transition: all 0.3s ease;
+}
+
+.file-card:hover {
+	background: linear-gradient(
+		135deg,
+		rgba(102, 126, 234, 0.15) 0%,
+		rgba(118, 75, 162, 0.15) 100%
+	);
+	border-color: rgba(102, 126, 234, 0.4);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* Result card enhancements */
+.result-card {
+	transition: all 0.3s ease;
+	border-left: 3px solid transparent;
+}
+
+.result-card:hover {
+	border-left-color: #667eea;
+	background: linear-gradient(
+		90deg,
+		rgba(102, 126, 234, 0.05) 0%,
+		transparent 100%
+	);
+	transform: translateX(4px);
+	box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+/* Mode toggle button */
+.mode-toggle-btn {
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+}
+
+.mode-toggle-btn::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.3),
+		transparent
+	);
+	transition: left 0.5s ease;
+}
+
+.mode-toggle-btn:hover::before {
+	left: 100%;
+}
+
+/* Answer box special effects */
+.answer-box {
+	background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+	border: 2px solid #bae6fd;
+	position: relative;
+	overflow: hidden;
+}
+
+.answer-box::before {
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	background: radial-gradient(
+		circle,
+		rgba(102, 126, 234, 0.1) 0%,
+		transparent 70%
+	);
+	animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.answer-box > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* Source badge */
+.source-badge {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	padding: 2px 8px;
+	border-radius: 12px;
+	font-size: 10px;
+	font-weight: 600;
+	display: inline-block;
+	box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Empty state illustration animation */
+@keyframes floatSlow {
+	0%,
+	100% {
+		transform: translateY(0px) rotate(0deg);
+	}
+	50% {
+		transform: translateY(-15px) rotate(2deg);
+	}
+}
+
+.empty-state-icon {
+	animation: floatSlow 4s ease-in-out infinite;
+}

@@ -1,0 +1,9 @@
+{
+  "dependencies": ["."],
+  "env": ".env",
+  "python_version": "3.11",
+  "graphs": {
+    "index": "agent_app.graphs.index_graph:index_graph_api",
+    "query": "agent_app.graphs.query_graph:query_graph_api"
+  }
+}

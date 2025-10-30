@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+.venv/
+venv/
+.langgraph_api/
+
+# IDE settings
+.DS_Store
+.idea/
+.vscode/
+
+identifier.sqlite
+data/

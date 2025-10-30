@@ -1,0 +1,171 @@
+Metadata-Version: 2.4
+Name: local-agent
+Version: 0.2.2
+Summary: Local RAG agent with FastAPI, LangGraph, SQLite, Chroma
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: six>=1.16.0
+Requires-Dist: chromadb>=0.4.22
+Requires-Dist: fastapi>=0.111
+Requires-Dist: aiosqlite>=0.20
+Requires-Dist: uvicorn>=0.30
+Requires-Dist: pydantic>=2.7
+Requires-Dist: sqlalchemy>=2.0
+Requires-Dist: chromadb>=0.5
+Requires-Dist: tiktoken>=0.7
+Requires-Dist: langgraph>=0.2
+Requires-Dist: langgraph-cli[inmem]>=0.1.55
+Requires-Dist: langgraph-checkpoint-sqlite>=2.0.11
+Requires-Dist: langchain-core>=0.2
+Requires-Dist: httpx>=0.27
+Requires-Dist: requests>=2.32.4
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: openai>=1.35
+Requires-Dist: pypdf>=4.2
+Requires-Dist: python-docx>=1.1
+Requires-Dist: python-pptx>=0.6.23
+Requires-Dist: openpyxl>=3.1
+Requires-Dist: lxml<5,>=4.9
+Requires-Dist: beautifulsoup4<4.9,>=4.8
+Requires-Dist: xlrd==1.2.0
+Requires-Dist: python-multipart>=0.0.20
+
+# Local Agent (FastAPI + LangGraph + SQLite + Chroma)
+
+This project provides a **local agent** for indexing and searching files using **FastAPI**, **LangGraph**, **SQLite**, and **ChromaDB**.  
+It supports reading multiple document types and logs all search queries for auditing and analysis.
+
+---
+
+## Features
+- 📂 **Supported File Types**: `.pdf`, `.docx`, `.ppt`, `.pptx`, `.txt`, `.md`, `.csv`, `.xlsx`, `.json`, `.html`, `.xml`, `.rtf`, `.odt`, `.ods`, `.odp`.
+- ⚡ **FastAPI** backend with auto-generated API docs at `/docs`.
+- 🔍 **ChromaDB** vector search with persistence at `./data/chroma`.
+- 📝 **SQLite logging** for users, queries, and hits (`./data/app.sqlite`).  
+- 🔗 **LangGraph integration** for experimentation and dev workflows.
+- ✅ **Test suite with pytest** covering file readers, search, and API endpoints.
+
+---
+
+## Project Structure
+```
+local-agent/
+│── src/agent_app/        # Main FastAPI application & logic
+│── tests/                # Pytest test suite
+│── data/                 # SQLite + Chroma persistence
+│── .env.example          # Example environment variables
+│── pytest.ini            # Pytest configuration
+│── README.md             # Project documentation
+```
+
+---
+
+## Setup Guide
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/v-superatom/local-agent.git
+cd local-agent
+```
+
+### 2. Install [uv](https://docs.astral.sh/uv/)
+```bash
+pip install uv
+```
+
+### 3. Configure Environment
+```bash
+cp .env.example .env
+# Update .env with real values:
+#   OPENAI_API_KEY="your_api_key"
+#   INDEX_ROOTS=["./"]
+```
+
+### 4. Install Dependencies
+```bash
+uv pip install -e .
+```
+
+### 5. Run FastAPI Server
+```bash
+uv run uvicorn agent_app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+- Open API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+### 6. Run LangGraph Studio
+```bash
+uv run langgraph dev
+```
+- Studio opens at the URL printed in the console.
+
+---
+
+## API Endpoints
+
+### Indexing
+- `POST /api/v1/index-full` → Full rebuild (uses `.env` INDEX_ROOTS if omitted)
+- `POST /api/v1/index` → Incremental indexing
+
+### Search
+- `POST /api/v1/file/search` → Runs query against indexed files  
+- `POST /api/v1/web-search` → Runs web-based query
+
+### Logs
+- Queries, responses, and hits stored in SQLite (`./data/app.sqlite`).
+
+---
+
+## Running Tests
+
+We use `pytest` for testing.
+
+### Run all tests
+```bash
+uv run pytest -q
+```
+
+### Run with detailed logs
+```bash
+uv run pytest -v -s
+```
+
+### Example Output
+```
+tests/test_readers_formats.py::test_pdf_reader PASSED
+tests/test_readers_formats.py::test_docx_reader PASSED
+tests/test_readers_formats.py::test_pptx_reader PASSED
+tests/test_search_api.py::test_search_valid_query PASSED
+tests/test_web_search_api.py::test_web_search PASSED
+```
+
+### Coverage for Supported File Types
+Tests ensure correct parsing and indexing for:
+- `.pdf`
+- `.docx`
+- `.ppt`, `.pptx`
+- `.txt`
+- `.md`
+- `.csv`, `.xlsx`
+- `.json`
+- `.html`, `.xml`
+- `.rtf`
+- `.odt`, `.ods`, `.odp`
+
+---
+
+## Database & Storage
+- SQLite DB → `./data/app.sqlite` (with WAL mode enabled).
+- Chroma persistence → `./data/chroma`.
+
+---
+
+## Contributing
+1. Fork the repo.
+2. Create a feature branch.
+3. Commit and push your changes.
+4. Submit a Pull Request.
+
+---
+
+## License
+MIT License © 2025 [v-superatom](https://github.com/v-superatom)
