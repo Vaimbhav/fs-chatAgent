@@ -1,139 +1,135 @@
-# Local Agent (FastAPI + LangGraph + SQLite + Chroma)
 
-This project provides a **local agent** for indexing and searching files using **FastAPI**, **LangGraph**, **SQLite**, and **ChromaDB**.  
-It supports reading multiple document types and logs all search queries for auditing and analysis.
 
----
+# local-agent
 
-## Features
-- 📂 **Supported File Types**: `.pdf`, `.docx`, `.ppt`, `.pptx`, `.txt`, `.md`, `.csv`, `.xlsx`, `.json`, `.html`, `.xml`, `.rtf`, `.odt`, `.ods`, `.odp`.
-- ⚡ **FastAPI** backend with auto-generated API docs at `/docs`.
-- 🔍 **ChromaDB** vector search with persistence at `./data/chroma`.
-- 📝 **SQLite logging** for users, queries, and hits (`./data/app.sqlite`).  
-- 🔗 **LangGraph integration** for experimentation and dev workflows.
-- ✅ **Test suite with pytest** covering file readers, search, and API endpoints.
+Lightweight local RAG (retrieval-augmented generation) agent built on FastAPI, LangGraph, SQLite, and Chroma.
 
----
+This package provides:
 
-## Project Structure
-```
-local-agent/
-│── src/agent_app/        # Main FastAPI application & logic
-│── tests/                # Pytest test suite
-│── data/                 # SQLite + Chroma persistence
-│── .env.example          # Example environment variables
-│── pytest.ini            # Pytest configuration
-│── README.md             # Project documentation
-```
+* an HTTP API (FastAPI) to index, search and upload documents
+* integrations with LangGraph for index/query graphs and checkpoints
+* a ChromaDB-backed vector store for embeddings
+* simple SQLite logging for queries and events
 
----
+## Quick start (TL;DR)
 
-## Setup Guide
+**Prereqs:** Python >= 3.11, git
 
-### 1. Clone Repository
+1. Create a virtualenv and install the package in editable mode:
+
 ```bash
-git clone https://github.com/v-superatom/local-agent.git
-cd local-agent
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
 ```
 
-### 2. Install [uv](https://docs.astral.sh/uv/)
-```bash
-pip install uv
-```
+2. Copy example env and edit keys/paths:
 
-### 3. Configure Environment
 ```bash
 cp .env.example .env
-# Update .env with real values:
-#   OPENAI_API_KEY="your_api_key"
-#   INDEX_ROOTS=["./"]
+# edit .env: OPENAI_API_KEY, INDEX_ROOTS, DATA_DIR, etc.
 ```
 
-### 4. Install Dependencies
+3. Run the API (either using the included `uv` tool if you installed it, or plain `uvicorn`)
+
+**Using `uv` (optional helper defined in pyproject):**
+
 ```bash
-uv pip install -e .
+# if you installed the `uv` CLI via the project tooling
+uv run uvicorn agent_app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 5. Run FastAPI Server
+**Or with plain uvicorn:**
+
 ```bash
-uv run uvicorn agent_app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn agent_app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-- Open API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-### 6. Run LangGraph Studio
+Open API docs at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+## Requirements & install
+
+* Python 3.11 or newer (pyproject declares requires-python >=3.11)
+* Install dependencies via pip (see pyproject.toml for pinned libs)
+
+Install for development:
+
 ```bash
-uv run langgraph dev
+python -m pip install -e .[test]
 ```
-- Studio opens at the URL printed in the console.
 
----
+If you prefer to avoid editable installs, use `pip install .` instead.
 
-## API Endpoints
+## Environment variables
 
-### Indexing
-- `POST /api/v1/index-full` → Full rebuild (uses `.env` INDEX_ROOTS if omitted)
-- `POST /api/v1/index` → Incremental indexing
+Copy `.env.example` to `.env` and set the following at minimum:
 
-### Search
-- `POST /api/v1/file/search` → Runs query against indexed files  
-- `POST /api/v1/web-search` → Runs web-based query
+* **OPENAI_API_KEY** — if you use OpenAI models
+* **INDEX_ROOTS** — JSON-like list of paths to index (e.g. `INDEX_ROOTS=["./content"]`)
+* **DATA_DIR / CHROMA_DIR / CHECKPOINT_DIR** — optional override of on-disk storage
 
-### Logs
-- Queries, responses, and hits stored in SQLite (`./data/app.sqlite`).
+The repository includes `.env.example` with common defaults.
 
----
+## Usage
 
-## Running Tests
+**Key API endpoints (all under `/api/v1`):**
 
-We use `pytest` for testing.
+* `POST /index-full` — full reindex (mode: full). Use `roots` in body to override `INDEX_ROOTS`.
+* `POST /index` — incremental index of changed files.
+* `POST /file/search` — local file search (JSON body: user_id, query, top_k).
+* `GET /web/search` — web search using configured web engines (exa, serper).
+* `POST /upload-files` — upload & index files via multipart upload.
 
-### Run all tests
+**Health check:**
+`GET /api/v1/health`
+
+Example: index everything using the configured `INDEX_ROOTS`:
+
 ```bash
-uv run pytest -q
+curl -X POST "http://127.0.0.1:8000/api/v1/index-full" -H "Content-Type: application/json" -d '{}'
 ```
 
-### Run with detailed logs
+## Tests
+
+Run the pytest suite (project includes tests in `tests/`):
+
 ```bash
-uv run pytest -v -s
+pytest -q
 ```
 
-### Example Output
-```
-tests/test_readers_formats.py::test_pdf_reader PASSED
-tests/test_readers_formats.py::test_docx_reader PASSED
-tests/test_readers_formats.py::test_pptx_reader PASSED
-tests/test_search_api.py::test_search_valid_query PASSED
-tests/test_web_search_api.py::test_web_search PASSED
+Run a single test file:
+
+```bash
+pytest tests/test_readers_formats.py::test_pdf_reader -q
 ```
 
-### Coverage for Supported File Types
-Tests ensure correct parsing and indexing for:
-- `.pdf`
-- `.docx`
-- `.ppt`, `.pptx`
-- `.txt`
-- `.md`
-- `.csv`, `.xlsx`
-- `.json`
-- `.html`, `.xml`
-- `.rtf`
-- `.odt`, `.ods`, `.odp`
+## Data and persistence
 
----
+* **Chroma persistence directory (default):** `./data/chroma`
+* **LangGraph checkpoints and SQLite files:** under `./data` (`CHECKPOINT_DIR`)
+* Fast, local testing uses the `checkpoint` SQLite checkpointers declared in `pyproject` via LangGraph
 
-## Database & Storage
-- SQLite DB → `./data/app.sqlite` (with WAL mode enabled).
-- Chroma persistence → `./data/chroma`.
+If you need to clear state, stop the server and remove the `./data` directory (or specific subfolders). Be careful: this deletes indexed data.
 
----
+## Development notes
+
+* **Main application entry:** `src/agent_app/main.py` (FastAPI app object: `app`)
+* **Config:** `src/agent_app/config.py` — reads `.env` and exposes `SETTINGS`
+* **Indexing/Query graphs:** `src/agent_app/graphs/` (LangGraph graph builders)
+* **Vectorstore helpers:** `src/agent_app/vectorstore.py`
+
+If you implement new readers or change indexing behavior, add tests under `tests/` and run the suite.
+
+## Troubleshooting
+
+* If uvicorn fails to start, ensure required native packages are installed and Python version matches (>=3.11).
+* If embeddings fail, check `OPENAI_API_KEY` or other embedding provider keys in `.env`.
+* If Chroma fails to start, inspect `CHROMA_DIR` and file permissions.
 
 ## Contributing
-1. Fork the repo.
-2. Create a feature branch.
-3. Commit and push your changes.
-4. Submit a Pull Request.
 
----
-
-## License
-MIT License © 2025 [v-superatom](https://github.com/v-superatom)
+1. Fork the repo and create a branch.
+2. Add tests for new behavior.
+3. Run `pytest` and ensure green.
+4. Open a pull request describing your changes.
